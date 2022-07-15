@@ -4,12 +4,12 @@
       <template #left> <van-icon name="cross" /> </template>
     </van-nav-bar>
 
-    <van-form @submit="onSubmit">
+    <van-form @submit="onSubmit" ref="form">
       <van-field
         v-model="mobile"
         name="mobile"
         placeholder="请输入手机号"
-        :rules="[{ required: true, message: '请输入手机号' }]"
+        :rules="mobileRules"
       >
         <template #label>
           <span class="toutiao toutiao-shouji"></span>
@@ -21,13 +21,27 @@
         type="text"
         name="code"
         placeholder="请输入验证码"
-        :rules="[{ required: true, message: '请输入验证码' }]"
+        :rules="codeRules"
       >
         <template #label>
           <span class="toutiao toutiao-yanzhengma"></span>
         </template>
         <template #right-icon>
-          <van-button class="code-btn" size="mini" round>发送验证码</van-button>
+          <van-count-down
+            v-if="isShowCountdown"
+            @finish="isShowCountdown = false"
+            :time="15 * 1000"
+            format="ss 秒"
+          />
+          <van-button
+            v-else
+            native-type="button"
+            class="code-btn"
+            size="mini"
+            round
+            @click="sendCode"
+            >发送验证码</van-button
+          >
         </template>
       </van-field>
 
@@ -39,12 +53,16 @@
 </template>
 
 <script>
-import { login } from '@/api/user'
+import { login, sendCode } from '@/api/user'
+import { mobileRules, codeRules } from './rules'
 export default {
   data () {
     return {
       mobile: '',
-      code: ''
+      code: '',
+      mobileRules,
+      codeRules,
+      isShowCountdown: false
     }
   },
   methods: {
@@ -52,8 +70,40 @@ export default {
       this.$router.back()
     },
     async onSubmit () {
-      const res = await login(this.mobile, this.code)
-      console.log(res)
+      this.$toast.loading({
+        message: '加载中',
+        forbidClick: true
+      })
+      try {
+        const res = await login(this.mobile, this.code)
+        this.$store.commit('setToken', res.data.data)
+        console.log(res)
+        this.$router.push('/home')
+        this.$toast.success('登录成功')
+      } catch (error) {
+        console.log(error)
+        let message = '服务器繁忙，请刷新'
+        if (error.response.status === 400) {
+          message = error.response.data.message
+        }
+        this.$toast.fail(message)
+      }
+    },
+    async sendCode () {
+      try {
+        await this.$refs.form.validate('mobile')
+        await sendCode(this.mobile)
+        this.isShowCountdown = true
+      } catch (error) {
+        if (!error.response) {
+          this.$toast.fail('手机号格式不正确')
+        } else {
+          const status = error.response.status
+          if (status === 400 || status === 429) {
+            this.$toast.fail(error.response.data.message)
+          }
+        }
+      }
     }
   }
 }
