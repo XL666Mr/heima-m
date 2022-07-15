@@ -1,5 +1,5 @@
 <template>
-  <div>home</div>
+  <div>qa</div>
 </template>
 
 <script>
