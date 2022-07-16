@@ -38,7 +38,7 @@ const routes = [
       {
         path: '/profile',
         component: () => {
-          return import('@/views/Profile')
+          return import('@/views/My')
         }
       }
     ]

@@ -10,10 +10,9 @@ class Storage {
 
   set (key, val) {
     if (typeof val === 'object') {
-      return localStorage.setItem(key, JSON.stringify(val))
-    } else {
-      return localStorage.setItem(key, val)
+      val = JSON.stringify(val)
     }
+    localStorage.setItem(key, val)
   }
 
   remove (key) {
