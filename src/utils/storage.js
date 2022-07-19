@@ -11,6 +11,7 @@ class Storage {
   set (key, val) {
     if (typeof val === 'object') {
       val = JSON.stringify(val)
+      console.log(val)
     }
     localStorage.setItem(key, val)
   }

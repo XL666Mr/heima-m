@@ -24,7 +24,7 @@
         <template #icon>
           <span class="toutiao toutiao-wode"></span>
         </template>
-        我的
+        {{ isLogin ? '我的' : '未登录' }}
       </van-tabbar-item>
     </van-tabbar>
   </div>
@@ -32,8 +32,10 @@
 
 <script>
 export default {
-  created () {
-    // console.log(this.$router)
+  computed: {
+    isLogin () {
+      return !!this.$store.state.token.token
+    }
   }
 }
 </script>
