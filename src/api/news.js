@@ -8,3 +8,9 @@ export const getArticleList = (channelId, timestamp) => {
     }
   })
 }
+
+export const getArticleDetails = (id) => {
+  return request({
+    url: '/v1_0/articles/' + id
+  })
+}

@@ -4,12 +4,16 @@ import { getToken, setToken } from '@/utils'
 Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
-    token: getToken() || {}
+    token: getToken() || {},
+    articleId: ''
   },
   mutations: {
     setToken (state, payload) {
       state.token = payload
       setToken(payload)
+    },
+    setArticleId (state, payload) {
+      state.articleId = payload
     }
   }
 })
