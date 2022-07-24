@@ -46,6 +46,7 @@ export default {
     },
     changeval (index) {
       console.log(this.list[index])
+      this.$store.commit('sethistoryItem', this.list[index])
       this.$emit('changevals', this.list[index])
     }
   },
@@ -53,7 +54,6 @@ export default {
     highlightData () {
       // 将搜索建议每一项处理
       const reg = new RegExp(this.keywords, 'ig')
-
       return this.list.map((str) =>
         str.replace(reg, (match) => `<span style="color:red">${match}</span>`)
       )

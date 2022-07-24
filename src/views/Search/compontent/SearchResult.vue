@@ -1,12 +1,21 @@
 <template>
   <div>
-    <van-cell
-      :title="item.title"
-      v-for="item in list"
-      :key="item.art_id"
-      @click="articleInfo(item.art_id)"
+    <van-list
+      v-model="loading"
+      :finished="finished"
+      loading-text="加载中..."
+      finished-text="没有更多了"
+      @load="onLoad"
+      offset="100"
     >
-    </van-cell>
+      <van-cell
+        :title="item.title"
+        v-for="(item, index) in list"
+        :key="index"
+        @click="articleInfo(item.art_id)"
+      >
+      </van-cell>
+    </van-list>
   </div>
 </template>
 
@@ -15,7 +24,11 @@ import { getSearchResult, getArticleDetails } from '@/api'
 export default {
   data () {
     return {
-      list: []
+      list: [],
+      loading: false,
+      finished: false,
+      refreshing: false,
+      page: 1
     }
   },
   props: {
@@ -27,10 +40,9 @@ export default {
   methods: {
     async getSearchResults () {
       try {
-        console.log(this.searchResultVal)
         const res = await getSearchResult(this.searchResultVal)
-        console.log(res)
         this.list = res.data.data.results
+        this.page = res.data.data.page
       } catch (error) {
         console.log(error)
       }
@@ -39,8 +51,19 @@ export default {
       console.log(id)
       const res = await getArticleDetails(id)
       console.log(res)
-      this.$store.commit('setArticleId', id)
-      this.$router.push('/detail')
+      this.$router.push('/detail/' + id)
+    },
+    async onLoad () {
+      try {
+        const res = await getSearchResult(this.searchResultVal, ++this.page)
+        this.loading = false
+        if (res.data.data.results.length < 10) {
+          this.finished = true
+        }
+        this.list.push(...res.data.data.results)
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
   created () {

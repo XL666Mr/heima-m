@@ -50,7 +50,7 @@ const routes = [
     }
   },
   {
-    path: '/detail',
+    path: '/detail/:id',
     component: () => {
       return import('@/views/Detail')
     }

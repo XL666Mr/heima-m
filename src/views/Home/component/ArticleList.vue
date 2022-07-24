@@ -49,7 +49,6 @@ export default {
       try {
         const { data } = await getArticleList(this.id, +new Date())
         this.pre_timetamp = data.data.pre_timestamp
-        console.log(this.pre_timetamp)
         this.articles = data.data.results
       } catch (error) {
         if (error.response.status === 400) {

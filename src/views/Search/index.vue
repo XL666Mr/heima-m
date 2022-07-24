@@ -36,6 +36,7 @@ export default {
     },
     onSearch () {
       this.isShowSearchResult = true
+      this.$store.commit('sethistoryItem', this.value)
     },
     visibleSearchSuggestion () {
       this.isShowSearchResult = false

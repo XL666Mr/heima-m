@@ -61,7 +61,6 @@ export default {
           }
         } else {
           const { data } = await getMyChannels()
-          console.log(data)
           this.list = data.data.channels
         }
       } catch (error) {}
