@@ -31,7 +31,7 @@
       ></detailPopup>
       <div class="footer_icon">
         <van-badge :content="commentNum">
-          <van-icon name="comment-o" />
+          <van-icon name="comment-o"/>
         </van-badge>
         <van-badge>
           <van-icon name="star-o" />
@@ -259,6 +259,7 @@ export default {
   :deep(.van-icon) {
     color: rgb(119, 119, 119);
     font-weight: 400;
+    font-size: large;
   }
 }
 </style>
