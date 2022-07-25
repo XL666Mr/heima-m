@@ -14,7 +14,10 @@
           :icon="articleDetailList.aut_photo"
         >
           <template>
-            <van-button round icon="plus">关注</van-button>
+            <van-button round icon="plus" v-if="isFlower" @click="isFlowerFn"
+              >关注</van-button
+            >
+            <van-button round v-else @click="delFlowerFn">已关注</van-button>
           </template></van-cell
         >
       </van-cell-group>
@@ -31,27 +34,51 @@
       ></detailPopup>
       <div class="footer_icon">
         <van-badge :content="commentNum">
-          <van-icon name="comment-o"/>
+          <van-icon name="comment-o" />
         </van-badge>
         <van-badge>
-          <van-icon name="star-o" />
+          <van-icon
+            name="star-o"
+            v-if="isCollections"
+            @click="isCollectionsFn"
+          />
+          <van-icon name="star" v-else @click="delCollectionsFn" />
         </van-badge>
         <van-badge>
-          <van-icon name="good-job-o" />
+          <van-icon name="good-job-o" v-if="islikings" @click="islikingsFn" />
+          <van-icon name="good-job" v-else @click="dellikingsFn" />
         </van-badge>
         <van-badge>
-          <van-icon name="share" />
+          <van-icon name="share" @click="showShare = true" />
         </van-badge>
+        <van-share-sheet
+          v-model="showShare"
+          title="立即分享给好友"
+          :options="options"
+          @select="onSelect"
+        />
       </div>
     </div>
     <div>
-      <commetList :list="commitLists" @change2="change2Fn"></commetList>
+      <commetList
+        @change2="change2Fn"
+        @changeIslike="changeIslikeFn"
+      ></commetList>
     </div>
   </div>
 </template>
 
 <script>
-import { getArticleDetails, getCommentList } from '@/api'
+import {
+  getArticleDetails,
+  getCommentList,
+  setFollowings,
+  deleteFollowings,
+  setCollections,
+  deleteCollections,
+  setlikings,
+  deletelikings
+} from '@/api'
 import commetList from './commetList.vue'
 import dayjs from '@/utils/dayjs'
 import detailPopup from './detailPopup'
@@ -59,8 +86,18 @@ export default {
   data () {
     return {
       articleDetailList: {},
-      commitLists: [],
-      commentNum: ''
+      commentNum: '',
+      showShare: false,
+      options: [
+        { name: '微信', icon: 'wechat' },
+        { name: '微博', icon: 'weibo' },
+        { name: '复制链接', icon: 'link' },
+        { name: '分享海报', icon: 'poster' },
+        { name: '二维码', icon: 'qrcode' }
+      ],
+      isFlower: true,
+      isCollections: true,
+      islikings: true
     }
   },
   methods: {
@@ -72,13 +109,80 @@ export default {
       console.log(res)
       this.articleDetailList = res.data.data
     },
+    change2Fn () {
+      this.getCommentLists()
+    },
+    onSelect () {
+      this.showShare = false
+    },
+    // 获取评论列表
     async getCommentLists () {
       const res = await getCommentList(this.$route.params.id)
-      console.log(res)
-      this.commitLists = res.data.data.results
+      this.$store.commit('seturlphoto', res.data.data.results)
       this.commentNum = res.data.data.results.length
     },
-    change2Fn () {
+    // 关注用户
+    async isFlowerFn () {
+      try {
+        const res = await setFollowings(this.articleDetailList.aut_id)
+        console.log(res)
+        if (res.status === 201) return (this.isFlower = false)
+      } catch (error) {
+        this.$toast.fail('关注失败')
+      }
+    },
+    // 取消用户关注
+    async delFlowerFn () {
+      try {
+        const res = await deleteFollowings(this.articleDetailList.aut_id)
+        console.log(res)
+        if (res.status === 204) return (this.isFlower = true)
+      } catch (error) {
+        this.$toast.fail('取消关注失败')
+      }
+    },
+    // 收藏文章
+    async isCollectionsFn () {
+      try {
+        const res = await setCollections(this.articleDetailList.art_id)
+        console.log(res)
+        if (res.status === 201) return (this.isCollections = false)
+      } catch (error) {
+        this.$toast.fail('收藏失败')
+      }
+    },
+    // 取消收藏
+    async delCollectionsFn () {
+      try {
+        const res = await deleteCollections(this.articleDetailList.art_id)
+        console.log(res)
+        if (res.status === 204) return (this.isCollections = true)
+      } catch (error) {
+        this.$toast.fail('取消收藏失败')
+      }
+    },
+    // 收藏文章
+    async islikingsFn () {
+      try {
+        const res = await setlikings(this.articleDetailList.art_id)
+        console.log(res)
+        if (res.status === 201) return (this.islikings = false)
+      } catch (error) {
+        this.$toast.fail('收藏失败')
+      }
+    },
+    // 取消收藏
+    async dellikingsFn () {
+      try {
+        const res = await deletelikings(this.articleDetailList.art_id)
+        console.log(res)
+        if (res.status === 204) return (this.islikings = true)
+      } catch (error) {
+        this.$toast.fail('取消收藏失败')
+      }
+    },
+    changeIslikeFn () {
+      console.log(11)
       this.getCommentLists()
     }
   },

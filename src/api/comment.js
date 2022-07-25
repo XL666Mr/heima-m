@@ -48,3 +48,24 @@ export const setCommentReply = (target, content, artId) => {
     data: { target, content, art_id: artId }
   })
 }
+// 对评论或评论回复点赞
+export const setCommentlikings = (target) => {
+  return request({
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    url: '/v1_0/comment/likings',
+    method: 'POST',
+    data: { target }
+  })
+}
+// 对评论或评论回复取消点赞
+export const delCommentlikings = (target) => {
+  return request({
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    url: `/v1_0/comment/likings/${target}`,
+    method: 'DELETE'
+  })
+}

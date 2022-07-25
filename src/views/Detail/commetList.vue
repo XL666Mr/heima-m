@@ -17,7 +17,16 @@
             >回复{{ item.reply_count }}</van-button
           >
         </template>
-        <span><van-icon name="good-job-o">赞</van-icon></span>
+        <template>
+          <van-icon
+            name="good-job-o"
+            v-if="!item.is_liking"
+            @click="isLikeFn(index) && ++item.like_count"
+            >赞</van-icon
+          >
+          <van-icon name="good-job" v-else @click="isLikeFn(index)"></van-icon>
+          <van-badge :content="item.like_count" v-show="item.is_liking" />
+        </template>
       </van-cell>
     </van-cell-group>
     <van-popup
@@ -36,15 +45,12 @@
 <script>
 import dayjs from '@/utils/dayjs'
 import replyPageVue from './replyPage.vue'
+import { setCommentlikings, delCommentlikings } from '@/api'
 export default {
   data () {
     return {
-      isShow: false
-    }
-  },
-  props: {
-    list: {
-      type: Array
+      isShow: false,
+      isLike: true
     }
   },
   methods: {
@@ -60,6 +66,25 @@ export default {
     },
     change1Fn () {
       this.$emit('change2')
+    },
+    async isLikeFn (val) {
+      console.log(this.list[val].is_liking)
+      try {
+        if (this.list[val].is_liking) {
+          const res = await delCommentlikings(this.list[val].com_id)
+          console.log(res)
+          return this.$emit('changeIslike')
+        } else {
+          const res1 = await setCommentlikings(this.list[val].com_id)
+          console.log(res1)
+          return this.$emit('changeIslike')
+        }
+      } catch (error) {}
+    }
+  },
+  computed: {
+    list () {
+      return this.$store.state.urlphoto
     }
   },
   components: {
@@ -96,6 +121,9 @@ export default {
     line-height: 48px;
     background-color: #fff;
     margin-left: 20px;
+  }
+  :deep(.van-cell__value) {
+    overflow: unset;
   }
 }
 </style>

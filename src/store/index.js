@@ -12,7 +12,8 @@ export default new Vuex.Store({
   state: {
     token: getToken() || {},
     historyItem: getHistoryItem() || [],
-    idArray: Number
+    idArray: Number,
+    urlphoto: []
   },
   mutations: {
     setToken (state, payload) {
@@ -34,6 +35,9 @@ export default new Vuex.Store({
     },
     setidArray (state, i) {
       state.idArray = i
+    },
+    seturlphoto (state, i) {
+      state.urlphoto = i
     }
   }
 })

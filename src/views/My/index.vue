@@ -23,6 +23,7 @@
                 class="code-btn"
                 size="mini"
                 round
+                to="/user"
                 >编辑</van-button
               >
             </van-row>
